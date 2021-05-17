@@ -38,6 +38,14 @@ spec:
         env:
         - name: JAVA_OPTIONS
           value: {{ .Values.env.javaoptions | quote }}
+        - name: meeting.api.key
+          value: oDjG_y9-RC66AC1tyQjs4Q
+        - name: meeting.api.secret
+          value: jKDQRJXYo5oaTiEyE1iw8MKF27ynvnlAQNYP
+        - name: meeting.api.endpoint
+          value: https://api.zoom.us/
+        - name: meeting.host.email
+          value: hritikm46@gmail.com
         envFrom:
         - configMapRef:
             name: {{ .Chart.Name }}-config
