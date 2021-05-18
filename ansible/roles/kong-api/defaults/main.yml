@@ -40,6 +40,7 @@ learner_private_route_prefix: /private
 private_content_prefix: /private/content
 device_prefix: /v3/device
 content_prefix: /content
+meeting_prefix: /meeting
 tickets_prefix: /tickets
 course_service_prefix: /course
 itemset_prefix: /itemset
@@ -351,7 +352,7 @@ kong_apis:
     - name: cors
     - "{{ statsd_pulgin }}"
     - name: acl
-      config.whitelist: 
+      config.whitelist:
         - 'orgSuperAdmin'
         - 'userSuperAdmin'
     - name: rate-limiting
@@ -370,7 +371,7 @@ kong_apis:
     - name: cors
     - "{{ statsd_pulgin }}"
     - name: acl
-      config.whitelist: 
+      config.whitelist:
         - 'contentAdmin'
         - 'contentTempAccess'
     - name: rate-limiting
@@ -812,6 +813,24 @@ kong_apis:
     - name: request-size-limiting
       config.allowed_payload_size: "{{ small_request_size_limit }}"
 
+  - name: createMeeting
+    uris: "{{ meeting_prefix }}/v1/create"
+    upstream_url: "{{ knowledge_mw_service_url }}/v1/meetings"
+    strip_uri: true
+    plugins:
+    - name: jwt
+    - name: cors
+    - "{{ statsd_pulgin }}"
+    - name: acl
+      config.whitelist:
+        - 'meetingCreate'
+    - name: rate-limiting
+      config.policy: local
+      config.hour: "{{ medium_rate_limit_per_hour }}"
+      config.limit_by: credential
+    - name: request-size-limiting
+      config.allowed_payload_size: "{{ small_request_size_limit }}"
+
   - name: createNote
     uris: "{{ notes_service_prefix }}/v1/create"
     upstream_url: "{{ learning_service_url }}/v1/note/create"
@@ -1009,7 +1028,7 @@ kong_apis:
       config.limit_by: credential
     - name: request-size-limiting
       config.allowed_payload_size: "{{ small_request_size_limit }}"
-      
+
   - name: createUserVersion4
     uris: "{{ user_service_prefix }}/v4/create"
     upstream_url: "{{ learning_service_url }}/v4/user/create"
@@ -1366,6 +1385,24 @@ kong_apis:
     - name: request-size-limiting
       config.allowed_payload_size: "{{ small_request_size_limit }}"
 
+  - name: generateSignature
+    uris: "{{ meeting_prefix }}/v1/signature"
+    upstream_url: "{{ knowledge_mw_service_url }}/v1/meetings/signature"
+    strip_uri: true
+    plugins:
+    - name: jwt
+    - name: cors
+    - "{{ statsd_pulgin }}"
+    - name: acl
+      config.whitelist:
+        - 'generateSignature'
+    - name: rate-limiting
+      config.policy: local
+      config.hour: "{{ medium_rate_limit_per_hour }}"
+      config.limit_by: credential
+    - name: request-size-limiting
+      config.allowed_payload_size: "{{ small_request_size_limit }}"
+
   - name: getAllData
     uris: "{{ data_service_prefix }}/v1/object/read/list"
     upstream_url: "{{ learning_service_url }}/v1/object/read/list"
@@ -1508,7 +1545,7 @@ kong_apis:
       config.hour: "{{ medium_rate_limit_per_hour }}"
       config.limit_by: credential
     - name: request-size-limiting
-      config.allowed_payload_size: "{{ small_request_size_limit }}"      
+      config.allowed_payload_size: "{{ small_request_size_limit }}"
 
   - name: getContentUploadUrl
     uris: "{{ content_prefix }}/v1/upload/url/read"
@@ -1614,6 +1651,20 @@ kong_apis:
     - name: request-size-limiting
       config.allowed_payload_size: "{{ medium_request_size_limit }}"
 
+  - name: getMeeting
+    uris: "{{ meeting_prefix }}/v1/read"
+    upstream_url: "{{ knowledge_mw_service_url }}/v1/meetings"
+    strip_uri: true
+    plugins:
+    - name: cors
+    - "{{ statsd_pulgin }}"
+    - name: rate-limiting
+      config.policy: local
+      config.hour: "{{ medium_rate_limit_per_hour }}"
+      config.limit_by: credential
+    - name: request-size-limiting
+      config.allowed_payload_size: "{{ small_request_size_limit }}"
+
   - name: getPageSettings
     uris: "{{ data_service_prefix }}/v1/page/read"
     upstream_url: "{{ lms_service_url }}/v1/page/read"
@@ -1713,7 +1764,7 @@ kong_apis:
     - name: cors
     - "{{ statsd_pulgin }}"
     - name: acl
-      config.whitelist: 
+      config.whitelist:
         - 'orgSuperAdmin'
         - 'userSuperAdmin'
     - name: rate-limiting
@@ -1840,7 +1891,7 @@ kong_apis:
     - name: cors
     - "{{ statsd_pulgin }}"
     - name: acl
-      config.whitelist: 
+      config.whitelist:
         - 'userAdmin'
         - 'orgAdmin'
     - name: rate-limiting
@@ -4377,7 +4428,7 @@ kong_apis:
       config.limit_by: credential
     - name: request-size-limiting
       config.allowed_payload_size: "{{ small_request_size_limit }}"
-  
+
   - name: userFeedUpdate
     uris: "{{ user_service_prefix }}/feed/v1/update"
     upstream_url: "{{ learning_service_url }}/v1/user/feed/update"
@@ -4790,7 +4841,7 @@ kong_apis:
       config.hour: "{{ medium_rate_limit_per_hour }}"
       config.limit_by: credential
     - name: request-size-limiting
-      config.allowed_payload_size: "{{ small_request_size_limit }}"      
+      config.allowed_payload_size: "{{ small_request_size_limit }}"
 
   - name: listGroup
     uris: "{{ group_service_prefix }}/v1/list"
@@ -4808,7 +4859,7 @@ kong_apis:
       config.hour: "{{ medium_rate_limit_per_hour }}"
       config.limit_by: credential
     - name: request-size-limiting
-      config.allowed_payload_size: "{{ small_request_size_limit }}"      
+      config.allowed_payload_size: "{{ small_request_size_limit }}"
 
   - name: readGroup
     uris: "{{ group_service_prefix }}/v1/read"
@@ -5042,7 +5093,7 @@ kong_apis:
        config.hour: "{{ medium_rate_limit_per_hour }}"
        config.limit_by: credential
      - name: request-size-limiting
-       config.allowed_payload_size: "{{ small_request_size_limit }}"     
+       config.allowed_payload_size: "{{ small_request_size_limit }}"
 
   - name: createTenantPreferences
     uris: "{{ org_service_prefix }}/v2/preferences/create"
@@ -5078,7 +5129,7 @@ kong_apis:
       config.hour: "{{ medium_rate_limit_per_hour }}"
       config.limit_by: credential
     - name: request-size-limiting
-      config.allowed_payload_size: "{{ small_request_size_limit }}" 
+      config.allowed_payload_size: "{{ small_request_size_limit }}"
 
   - name: readTenantPreferencess
     uris: "{{ org_service_prefix }}/v2/preferences/read"
@@ -5096,7 +5147,7 @@ kong_apis:
       config.hour: "{{ medium_rate_limit_per_hour }}"
       config.limit_by: credential
     - name: request-size-limiting
-      config.allowed_payload_size: "{{ small_request_size_limit }}"   
+      config.allowed_payload_size: "{{ small_request_size_limit }}"
 
   - name: generateCertificateV2
     uris: "{{ cert_service_prefix }}/v2/certs/generate"
@@ -5114,7 +5165,7 @@ kong_apis:
       config.hour: "{{ medium_rate_limit_per_hour }}"
       config.limit_by: credential
     - name: request-size-limiting
-      config.allowed_payload_size: "{{ medium_request_size_limit }}"  
+      config.allowed_payload_size: "{{ medium_request_size_limit }}"
 
   - name: addRegCertificateV2
     uris: "{{ cert_registry_service_prefix }}/v2/certs/add"
@@ -5151,7 +5202,7 @@ kong_apis:
       config.limit_by: credential
     - name: request-size-limiting
       config.allowed_payload_size: "{{ small_request_size_limit }}"
-    
+
   - name: contentImportAPI
     uris: "{{ content_prefix }}/v1/import"
     upstream_url: "{{ content_service_url }}/content/v3/import"
