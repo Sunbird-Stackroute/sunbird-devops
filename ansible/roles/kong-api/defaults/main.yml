@@ -1659,6 +1659,8 @@ kong_apis:
     - name: cors
     - "{{ statsd_pulgin }}"
     - name: rate-limiting
+      config.whitelist:
+        - 'meetingRead'
       config.policy: local
       config.hour: "{{ medium_rate_limit_per_hour }}"
       config.limit_by: credential
