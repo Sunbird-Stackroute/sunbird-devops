@@ -818,10 +818,8 @@ kong_apis:
     upstream_url: "{{ knowledge_mw_service_url }}/v1/meetings"
     strip_uri: true
     plugins:
-    - name: jwt
     - name: cors
     - "{{ statsd_pulgin }}"
-    - name: acl
       config.whitelist:
         - 'meetingCreate'
     - name: rate-limiting
@@ -1393,7 +1391,6 @@ kong_apis:
     - name: jwt
     - name: cors
     - "{{ statsd_pulgin }}"
-    - name: acl
       config.whitelist:
         - 'generateSignature'
     - name: rate-limiting
