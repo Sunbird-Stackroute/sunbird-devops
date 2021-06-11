@@ -27,9 +27,7 @@ mobile_device_groups:
   - groupAccess
   - groupAdmin
   - refreshTokenCreate
-  - meetingRead
   - generateSignature
-  - meetingCreate
 
 kong_all_consumer_groups:
   - announcementAccess
@@ -88,9 +86,7 @@ kong_all_consumer_groups:
   - druidReportCreate
   - druidReportAdmin
   - dataCreate
-  - meetingRead
   - generateSignature
-  - meetingCreate
 
 kong_consumers:
   - username: api-admin
